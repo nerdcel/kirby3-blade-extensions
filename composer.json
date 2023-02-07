@@ -1,0 +1,44 @@
+{
+  "name": "nerdcel/kirby-3-blade-extensions",
+  "description": "Simple way to add directives and ifs to the blade template engine",
+  "type": "kirby-plugin",
+  "keywords": [
+    "kirby",
+    "kirby-3",
+    "kirby3-plugin",
+    "kirby-plugin",
+    "kirby-blade",
+    "blade",
+    "laravel",
+    "view",
+    "template",
+    "template-engine"
+  ],
+  "require": {
+    "php": "^8.0",
+    "illuminate/view": "^9.0",
+    "illuminate/config": "^9.0",
+    "matthiasmullie/minify": "^1.3.70"
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-latest"
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Nerdcel\\BladeExtensions\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Marcel Hieke",
+      "email": "office@marcelhieke.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  }
+}
