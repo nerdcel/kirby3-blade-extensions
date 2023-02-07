@@ -1,5 +1,5 @@
 {
-  "name": "nerdcel/kirby-3-blade-extensions",
+  "name": "nerdcel/kirby3-blade-extensions",
   "description": "Simple way to add directives and ifs to the blade template engine",
   "type": "kirby-plugin",
   "keywords": [
