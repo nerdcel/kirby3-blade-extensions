@@ -4,6 +4,8 @@ namespace Nerdcel\BladeExtensions;
 
 use Nerdcel\BladeExtensions\Contracts\Registrable;
 use Nerdcel\BladeExtensions\Traits\Singleton;
+use Kirby\Toolkit\Str;
+use MatthiasMullie\Minify;
 
 class Directives extends Register implements Registrable
 {
@@ -62,6 +64,21 @@ class Directives extends Register implements Registrable
 
                 return '';
             },
+
+            'vueAddPayload' => function () {
+                [$scope, $data] = explode(',', func_get_args()[0]);
+
+                if ($scope !== '') {
+                    return <<<PHP
+                        <?php collectPush($scope, $data); ?>
+                    PHP;
+                }
+                return '';
+            },
+
+            'vuePayload' => function () {
+                return '<script type="application/json" id="app-data"><?= releasePush() ?></script>';
+            }
         ];
     }
 }

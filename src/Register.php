@@ -11,7 +11,7 @@ class Register
     public function register(): void
     {
         $kirby = kirby();
-        $loop = $kirby->option('nerdcel.kirby3-blade-extensions.' . $this->key, []);
+        $loop = $kirby->option('nerdcel.kirby3-blade-extensions.'.$this->key, []);
 
         switch (get_class($this)) {
             case Directives::class:
@@ -21,6 +21,7 @@ class Register
                     BladeFacade::directive($statement, $callback);
                 }
                 break;
+
             case Ifs::class:
                 $loop = [...Ifs::getInstance()->list(), ...$loop];
 
@@ -28,6 +29,15 @@ class Register
                     BladeFacade::if($statement, $callback);
                 }
                 break;
+
+            case Components::class:
+                $loop = [...Components::getInstance()->list(), ...$loop];
+
+                foreach ($loop as $callback) {
+                    $callback();
+                }
+                break;
+
             default:
                 return;
         }

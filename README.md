@@ -38,6 +38,10 @@ composer require nerdcel/kirby3-blade-extensions
 
 - viteDevMode
 
+## Available components
+
+- vueComponent
+
 ## Options
 
 The following options are available to be set using your site/config/config.php

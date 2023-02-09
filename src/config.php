@@ -3,4 +3,5 @@
 return [
     'ifs' => [],
     'directives' => [],
+    'components' => [],
 ];

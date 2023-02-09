@@ -30,7 +30,10 @@
   "autoload": {
     "psr-4": {
       "Nerdcel\\BladeExtensions\\": "src/"
-    }
+    },
+    "files": [
+      "src/helpers.php"
+    ]
   },
   "config": {
     "optimize-autoloader": true,
