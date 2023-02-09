@@ -39,14 +39,18 @@ class Directives extends Register implements Registrable
                 $minify = new Minify\JS();
                 $minify->add("window.AppData.setData($data, $scope);");
 
-                return '<script type="text/javascript">'.$minify->minify().'</script>';
+                return '<?php collectStack("vue", "' . $minify->minify() . '"); ?>';
             },
 
             'vueMethod' => function (string $method, $scope = null) {
                 $minify = new Minify\JS();
                 $minify->add("window.AppData.setMethod($method, $scope);");
 
-                return '<script type="text/javascript">'.$minify->minify().'</script>';
+                return '<?php collectStack("vue", "' . $minify->minify() . '"); ?>';
+            },
+
+            'vueRelease' => function () { // TODO use window load to release VUE data
+                return '<?php echo "<script type=\"text/javascript\">window.addEventListener(\"load\", function() {" . releaseStack("vue") . "});</script>"; ?>';
             },
 
             'inlineScript' => function () {
