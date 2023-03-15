@@ -27,26 +27,68 @@ class Directives extends Register implements Registrable
                 return '<?= $page->title()->or("")->escape(); ?>';
             },
 
-            'dd' => function ($var, $json = false) {
-                return "<?php $json? dump(json_decode($var)) : dump($var); die(); ?>";
+            'dd' => function ($expression) {
+                return "<?php
+                    \$directive_arguments = [{$expression}];
+
+                    if (count(\$directive_arguments) === 2) {
+                        \$var = \$directive_arguments[0];
+                        \$json = \$directive_arguments[1];
+                    } else {
+                        [\$var] = \$directive_arguments;
+                        \$json = false;
+                    }
+                    \$json? dump(json_decode(\$var)) : dump(\$var);
+                    unset(\$var, \$json, \$directive_arguments);
+                    die();
+                ?>";
             },
 
-            'level' => function ($level = '1', $content = '') {
-                return "<<?=$level?>><?=$content?></<?=$level?>>";
+            'level' => function ($expression) {
+                return "<?php
+                    \$directive_arguments = [{$expression}];
+
+                    if (count(\$directive_arguments) === 2) {
+                        \$directive_level = \$directive_arguments[0];
+                        \$directive_content = \$directive_arguments[1];
+                    } else {
+                        [\$directive_level] = \$directive_arguments;
+                        \$directive_content = \"\";
+                    }
+
+                    echo \"<\$directive_level>\$directive_content</\$directive_level>\";
+                ?>";
             },
 
-            'vueData' => function (string $data, $scope = null) {
-                $minify = new Minify\JS();
-                $minify->add("window.AppData.setData($data, $scope);");
+            'vueData' => function ($expression) {
+                return "<?php
+                    \$directive_arguments = [{$expression}];
 
-                return '<?php collectStack("vue", "'.$minify->minify().'"); ?>';
+                    if (count(\$directive_arguments) === 2) {
+                        \$directive_data = \$directive_arguments[0];
+                        \$directive_scope = \"'\" . \$directive_arguments[1] . \"'\";
+                    } else {
+                        [\$directive_data] = \$directive_arguments;
+                        \$directive_scope = null;
+                    }
+
+                    \$minify = new MatthiasMullie\Minify\JS();
+                    \$minify->add(\"window.AppData.setData(\" . json_encode(\$directive_data) . \", \$directive_scope);\");
+
+                    collectStack(\"vue\", \$minify->minify());
+                    unset(\$directive_data, \$directive_scope, \$directive_arguments);
+                ?>";
             },
 
-            'vueMethod' => function (string $method, $scope = null) {
-                $minify = new Minify\JS();
-                $minify->add("window.AppData.setMethod($method, $scope);");
+            'vueMethod' => function ($expression) {
+                return "<?php
+                    \$directive_method = \"$expression\";
+                    \$minify = new MatthiasMullie\Minify\JS();
+                    \$minify->add(\"window.AppData.setMethod(\$directive_method);\");
 
-                return '<?php collectStack("vue", "'.$minify->minify().'"); ?>';
+                    collectStack(\"vue\", \$minify->minify());
+                    unset(\$directive_method, \$directive_scope, \$directive_arguments);
+                ?>";
             },
 
             'vueRelease' => function () { // TODO use window load to release VUE data
@@ -61,24 +103,35 @@ class Directives extends Register implements Registrable
                 return '"); echo $min->minify(); })(new MatthiasMullie\Minify\JS()); ?></script>';
             },
 
-            'meta' => function ($method) {
-                if (method_exists(page()->meta(), $method)) {
-                    return '<?= $page->meta()->'.$method.'(); ?>';
-                }
-
-                return '';
+            'meta' => function ($expression) {
+                return "<?php
+                    \$directive_arguments = [\"$expression\"];
+                    [\$directive_method] = \$directive_arguments;
+                    if (method_exists(page()->meta(),\$directive_method)) {
+                        echo \$page->meta()->{\$directive_method}();
+                    }
+                    unset(\$directive_arguments, \$directive_method);
+                ?>";
             },
 
-            'vueAddPayload' => function () {
-                [$scope, $data] = explode(',', func_get_args()[0]);
+            'vueAddPayload' => function ($expression) {
+                return "<?php
+                    \$directive_arguments = [{$expression}];
 
-                if ($scope !== '') {
-                    return <<<PHP
-                        <?php collectPush($scope, $data); ?>
-                    PHP;
-                }
+                    if (count(\$directive_arguments) === 2) {
+                        \$directive_scope = \"\$directive_arguments[0]\";
+                        \$directive_data = \$directive_arguments[1];
+                    } else {
+                        [\$directive_scope] = \$directive_arguments;
+                        \$directive_data = null;
+                    }
 
-                return '';
+                    if (\$directive_scope !== '') {
+                        collectPush(\$directive_scope, \$directive_data);
+                    }
+
+                    unset(\$directive_arguments, \$directive_scope, \$directive_data);
+                ?>";
             },
 
             'vuePayload' => function () {
@@ -185,7 +238,22 @@ class Directives extends Register implements Registrable
                         unset(\$__cache_directive_key, \$__cache_directive_ttl, \$__cache_directive_buffer, \$__cache_directive_buffering, \$__cache_directive_arguments, \$__cache);
                     }
                 ?>";
-            }
+            },
+
+            't' => function ($expression) {
+                return "<?php
+                    \$directive_arguments = [{$expression}];
+                    if (count(\$directive_arguments) === 2) {
+                        [\$directive_key, \$directive_fallback] = \$directive_arguments;
+                    } else {
+                        [\$directive_key] = \$directive_arguments;
+                        \$directive_fallback = \$directive_key;
+                    }
+
+                    echo t(\$directive_key, \$directive_fallback);
+                    unset(\$directive_key, \$directive_fallback, \$directive_arguments);
+                ?>";
+            },
         ];
     }
 }
