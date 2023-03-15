@@ -112,12 +112,12 @@ class Directives extends Register implements Registrable
                             document.documentElement.classList.add("dark");
                             document.documentElement.classList.remove("light");
                         }
-    
+
                         if (localStorage.theme === "light" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: light)").matches)) {
                             document.documentElement.classList.add("light");
                             document.documentElement.classList.remove("dark");
                         }
-    
+
                         if (!("theme" in localStorage) && !window.matchMedia("(prefers-color-scheme: dark)").matches && !window.matchMedia("(prefers-color-scheme: light)").matches) {
                             document.documentElement.classList.remove("light");
                             document.documentElement.classList.remove("dark");
@@ -158,6 +158,33 @@ class Directives extends Register implements Registrable
                 }
 
                 return "<?php echo htmlentities(externalLinksJs(\"$path\", page())); ?>";
+            },
+
+            'cache' => function($expression) {
+                return "<?php
+                    \$__cache_directive_arguments = [{$expression}];
+                    if (count(\$__cache_directive_arguments) === 2) {
+                        [\$__cache_directive_key, \$__cache_directive_ttl] = \$__cache_directive_arguments;
+                    } else {
+                        [\$__cache_directive_key] = \$__cache_directive_arguments;
+                        \$__cache_directive_ttl = option('nerdcel.kirby3-blade-extensions.inline-cache.ttl');
+                    }
+                    if ((\$__cache = kirby()->cache('nerdcel.kirby3-blade-extensions.inline-cache')) && (\$value = \$__cache->get(\$__cache_directive_key)) !== null) {
+                        echo \$value;
+                    } else {
+                        \$__cache_directive_buffering = true;
+                        ob_start();
+                ?>";
+            },
+
+            'endcache' => function() {
+                return "<?php
+                        \$__cache_directive_buffer = ob_get_clean();
+                        \$__cache->set(\$__cache_directive_key, \$__cache_directive_buffer, \$__cache_directive_ttl);
+                        echo \$__cache_directive_buffer;
+                        unset(\$__cache_directive_key, \$__cache_directive_ttl, \$__cache_directive_buffer, \$__cache_directive_buffering, \$__cache_directive_arguments, \$__cache);
+                    }
+                ?>";
             }
         ];
     }
