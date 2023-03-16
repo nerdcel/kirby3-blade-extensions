@@ -31,8 +31,22 @@ composer require nerdcel/kirby3-blade-extensions
 - level
 - vueData
 - vueMethod
-- inlineScript (endinlineScript)
+- vueRelease
+- inlineScript
+- endinlineScript
 - meta
+- vueAddPayload
+- vuePayload
+- attributes
+- colorTheme
+- autoTheme
+- themeColors
+- headcode
+- footercode
+- externalLinksJs
+- cache
+- endcache
+- t
 
 ## Available ifs
 
