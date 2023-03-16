@@ -202,15 +202,25 @@ class Directives extends Register implements Registrable
                 return '<?= $site->footercode()->or(null)->value(); ?>';
             },
 
-            'externalLinksJs' => function ($path = null) {
+            'externalLinksJs' => function ($expression = null) {
+                return "<?php
                 if (!array_key_exists('nerdcel/kirby3-external-links', kirby()->plugins())) {
-                    return '';
-                }
-                if (!$path) {
-                    $path = 'media/plugins/nerdcel/kirby3-external-links/index.js';
-                }
+                    echo '';
+                } else {
+                    \$directive_arguments = [{$expression}];
 
-                return "<?php echo htmlentities(externalLinksJs(\"$path\", page())); ?>";
+                    if (count(\$directive_arguments) >= 1) {
+                        [\$directive_path] = \$directive_arguments;
+                    } else {
+                        \$directive_path = null;
+                    }
+
+                    if (!\$directive_path) {
+                        \$directive_path = 'media/plugins/nerdcel/kirby3-external-links/index.js';
+                    }
+                    echo htmlentities(externalLinksJs(\$directive_path, page()));
+                }
+                ?>";
             },
 
             'cache' => function($expression) {
