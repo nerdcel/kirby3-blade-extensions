@@ -91,8 +91,12 @@ class Directives extends Register implements Registrable
                 ?>";
             },
 
+            'vuePayload' => function () {
+                return '<script type="application/json" id="app-data"><?= releasePush() ?></script>';
+            },
+
             'vueRelease' => function () { // TODO use window load to release VUE data
-                return '<script type="text/javascript">window.addEventListener("AppDataInit", function() {<?= releaseStack("vue") ?>;});</script>';
+                return '<script type="text/javascript">window.addEventListener("AppDataInit", function() {' . releaseStack("vue") . '});</script>';
             },
 
             'inlineScript' => function () {
@@ -132,10 +136,6 @@ class Directives extends Register implements Registrable
 
                     unset(\$directive_arguments, \$directive_scope, \$directive_data);
                 ?>";
-            },
-
-            'vuePayload' => function () {
-                return '<script type="application/json" id="app-data"><?= releasePush() ?></script>';
             },
 
             'attributes' => function ($attributes) {
@@ -230,8 +230,9 @@ class Directives extends Register implements Registrable
                         [\$__cache_directive_key, \$__cache_directive_ttl] = \$__cache_directive_arguments;
                     } else {
                         [\$__cache_directive_key] = \$__cache_directive_arguments;
-                        \$__cache_directive_ttl = option('nerdcel.kirby3-blade-extensions.inline-cache.ttl');
+                        \$__cache_directive_ttl = option('nerdcel.kirby3-blade-extensions.inline-cache.ttl', 0);
                     }
+
                     if ((\$__cache = kirby()->cache('nerdcel.kirby3-blade-extensions.inline-cache')) && (\$value = \$__cache->get(\$__cache_directive_key)) !== null) {
                         echo \$value;
                     } else {
