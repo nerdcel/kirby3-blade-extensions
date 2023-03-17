@@ -16,6 +16,9 @@ class StackCollector
 
     public function release($scope): string
     {
-        return implode(";", $this->data[$scope]);
+        if (array_key_exists($scope, $this->data)) {
+            return implode(";", $this->data[$scope]);
+        }
+        return '';
     }
 }
