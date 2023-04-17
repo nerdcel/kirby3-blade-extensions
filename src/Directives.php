@@ -96,7 +96,16 @@ class Directives extends Register implements Registrable
             },
 
             'vueRelease' => function () { // TODO use window load to release VUE data
-                return '<script type="text/javascript">window.addEventListener("AppDataInit", function() { <?= releaseStack("vue") ?>});</script>';
+                return '<script type="text/javascript">window.addEventListener("AppDataInit", function() {
+                    <?= releaseStack("vue"); ?>;
+                    window.AppData.kirby = window.AppData.kirby || {};
+                    window.AppData.kirby.language = {
+                        code: "<?= $kirby->language()->code() ?>",
+                        name: "<?= $kirby->language()->name() ?>",
+                        direction: "<?= $kirby->language()->direction() ?>",
+                        url: "<?= $kirby->language()->url() ?>"
+                    };
+                });</script>';
             },
 
             'inlineScript' => function () {
